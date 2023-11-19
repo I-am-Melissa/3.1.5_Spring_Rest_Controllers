@@ -6,5 +6,4 @@ import ru.kata.spring.boot_security.demo.models.Role;
 
 @Repository
 public interface RoleDao extends JpaRepository<Role, Long> {
-    void delete(Long id);
 }

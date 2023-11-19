@@ -15,7 +15,7 @@ import java.util.HashSet;
 @SpringBootApplication
 public class SpringBootSecurityDemoApplication {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 //		SpringApplication.run(SpringBootSecurityDemoApplication.class, args);
         ApplicationContext context = SpringApplication.run(SpringBootSecurityDemoApplication.class, args);
         UserService userService = context.getBean(UserService.class);
@@ -24,11 +24,10 @@ public class SpringBootSecurityDemoApplication {
         Role user = new Role("ROLE_USER");
         Role admin = new Role("ROLE_ADMIN");
 
-        roleService.add(user);
-        roleService.add(admin);
+        roleService.save(user);
+        roleService.save(admin);
 
-        userService.add(new User("user@gmail.com", "user", new HashSet<>(Collections.singleton(user))));
-        userService.add(new User("admin@gmail.com", "admin", new HashSet<>(Arrays.asList(user, admin))));
-	}
-
+        userService.save(new User("Ivan", "Ivanov", 20, "user", "user", new HashSet<>(Collections.singleton(user))));
+        userService.save(new User("Petr", "Petrov", 20, "admin", "admin", new HashSet<>(Arrays.asList(user, admin))));
+    }
 }
