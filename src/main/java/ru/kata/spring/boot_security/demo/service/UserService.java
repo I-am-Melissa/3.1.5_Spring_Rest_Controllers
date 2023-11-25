@@ -11,7 +11,6 @@ import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.models.User;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -44,11 +43,9 @@ public class UserService implements UserDetailsService {
         userDao.save(user);
     }
 
-
-    public void deleteById(Long userId) {
-        if (userDao.findById(userId).isPresent()) {
-            userDao.deleteById(userId);
-        }
+    @Transactional
+    public void deleteById(Long id) {
+        userDao.deleteById(id);
     }
 
     @Transactional
@@ -61,13 +58,6 @@ public class UserService implements UserDetailsService {
         user1.setPassword(passwordEncoder.encode(user.getPassword()));
         user1.setRoles(user.getRoles());
     }
-
-    @Transactional(readOnly = true)
-    public User findUserById(Long id) {
-        Optional<User> user = userDao.findById(id);
-        return user.orElse(new User());
-    }
-
 
     @Transactional(readOnly = true)
     public List<User> getUsers() {

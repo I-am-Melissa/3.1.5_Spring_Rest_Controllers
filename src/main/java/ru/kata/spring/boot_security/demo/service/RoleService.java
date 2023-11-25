@@ -24,14 +24,11 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<Role> findById(Long id) {
-        Collection<Role> roles = null;
-        if (id == 1L) {
-            Role role = roleDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid role Id:" + id));
-            roles = Collections.singleton(role);
-        } else if (id == 2L) {
-            Role role = roleDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid role Id:" + id));
-            roles = Collections.singleton(role);
+    public Collection<Role> findById(Collection<Long> id) {
+        Collection<Role> roles = new ArrayList<>();
+        for (Long roleId : id) {
+            Role role = roleDao.findById(roleId).orElseThrow(() -> new IllegalArgumentException("Invalid role Id:" + id));
+            roles.add(role);
         }
         return roles;
     }
