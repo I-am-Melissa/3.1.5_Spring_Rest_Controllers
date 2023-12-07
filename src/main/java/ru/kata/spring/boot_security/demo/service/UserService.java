@@ -38,9 +38,9 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void save(User user) {
+    public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.save(user);
+        return userDao.save(user);
     }
 
     @Transactional
@@ -49,14 +49,15 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void edit(User user) {
+    public User edit(User user) {
         User user1 = userDao.getById(user.getId());
         user1.setName(user.getName());
         user1.setLastname(user.getLastname());
         user1.setAge(user.getAge());
-        user1.setEmail(user.getUsername());
+        user1.setUsername(user.getUsername());
         user1.setPassword(passwordEncoder.encode(user.getPassword()));
         user1.setRoles(user.getRoles());
+        return userDao.save(user1);
     }
 
     @Transactional(readOnly = true)

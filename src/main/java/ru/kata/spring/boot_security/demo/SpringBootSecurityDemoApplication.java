@@ -16,13 +16,14 @@ import java.util.HashSet;
 public class SpringBootSecurityDemoApplication {
 
     public static void main(String[] args) {
+
 //		SpringApplication.run(SpringBootSecurityDemoApplication.class, args);
         ApplicationContext context = SpringApplication.run(SpringBootSecurityDemoApplication.class, args);
         UserService userService = context.getBean(UserService.class);
         RoleService roleService = context.getBean(RoleService.class);
 
-        Role user = new Role("ROLE_USER");
         Role admin = new Role("ROLE_ADMIN");
+        Role user = new Role("ROLE_USER");
 
         roleService.save(user);
         roleService.save(admin);

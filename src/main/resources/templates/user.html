@@ -14,11 +14,7 @@
 
 <body>
 <nav class="navbar navbar-dark bg-dark px-4">
-    <span class="navbar-brand mb-0 h1">
-         <strong><a th:text="${user.getUsername()}"></a></strong>
-        <span class="text-start">with roles: <a th:each="role : ${user.getRoles()}"
-                                                th:text="${#strings.substringAfter(role, 'ROLE_')} + ' '"></a>
-        </span>
+    <span class="navbar-brand mb-0 h1" id="user_top_navbar">
     </span>
     <ul class="navbar-nav px-4">
         <li class="nav-item text-nowrap">
@@ -29,10 +25,8 @@
 
 <div class="d-flex flex-fill">
     <div class="d-flex flex-column pt-3" style="width: 250px">
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a class="nav-link active" href="#" th:href="@{/user}">User</a>
-            </li>
+        <ul class="nav nav-pills flex-column mb-auto" id="user_left_navbar">
+            <a class="nav-link active" href="/user">User</a>
         </ul>
     </div>
 
@@ -53,16 +47,7 @@
                             <th scope="col">Role</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr th:each="u : ${user}">
-                            <td th:text="${u.getId()}"></td>
-                            <td th:text="${u.getName()}"></td>
-                            <td th:text="${u.getLastname()}"></td>
-                            <td th:text="${u.getAge()}"></td>
-                            <td th:text="${u.getUsername()}"></td>
-                            <td><span th:each="role : ${u.getRoles()}"
-                                      th:text="${#strings.substringAfter(role, 'ROLE_')} + ' '"></span></td>
-                        </tr>
+                        <tbody id="user_information_page">
                         </tbody>
                     </table>
                 </div>
@@ -70,5 +55,15 @@
         </div>
     </main>
 </div>
+<script src="user.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
 </html>

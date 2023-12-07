@@ -9,5 +9,15 @@ public class LoginController {
     public String login() {
         return "redirect:/login";
     }
+
+    @GetMapping("/admin")
+    public String admin() {
+        return "admin";
+    }
+
+    @GetMapping("/user")
+    public String user() {
+        return "user";
+    }
 }
 
