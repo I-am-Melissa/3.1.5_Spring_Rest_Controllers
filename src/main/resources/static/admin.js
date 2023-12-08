@@ -2,10 +2,14 @@ const adminTopNavbar = document.getElementById("admin_top_navbar");
 const navigation = document.getElementById("nav-home-tab");
 const adminPanel = document.getElementById("admin_panel");
 const addUser = document.getElementById("add");
-const editUser = document.getElementById("edit_form");
-const deleteUser = document.getElementById("delete_form");
-const modalEdit = document.getElementById("modal_edit");
-const modalDelete = document.getElementById("modal_delete");
+
+const editId = document.getElementById("edit_id")
+const editName = document.getElementById("edit_name");
+const editLastname = document.getElementById("edit_lastname");
+const editAge = document.getElementById("edit_age");
+const editUsername = document.getElementById("edit_username");
+const editPassword = document.getElementById("edit_password");
+const editRoles = document.getElementById("edit_roles");
 
 const userURL = 'http://localhost:8080/api/user';
 const addUserURL = 'http://localhost:8080/admin/add';
@@ -35,20 +39,18 @@ const createTopNavbar = () => {
 
 createTopNavbar();
 
-async function getUsersAndRoles() {
-    let users = await fetch(listUsersURL);
-    listUsers = await users.json();
-    let roles = await fetch(listRolesURL);
-    listRoles = await roles.json();
-    createAdminPanel();
-}
-
-getUsersAndRoles();
-
 const createAdminPanel = () => {
-    let table = '';
-    listUsers.forEach(user => {
-        table += `
+    fetch(listUsersURL, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(users => {
+            let table = '';
+            users.forEach(user => {
+                table += `
                                 <tr>
                                     <td> ${user.id} </td>
                                     <td> ${user.name} </td>
@@ -66,8 +68,9 @@ const createAdminPanel = () => {
                                     </td>
                                 </tr>
                         `
-        adminPanel.innerHTML = table;
-    })
+                adminPanel.innerHTML = table;
+            })
+        })
 }
 
 addUser.addEventListener("submit", async (e) => {
@@ -110,52 +113,101 @@ addUser.addEventListener("submit", async (e) => {
         });
 })
 
+async function getUsersAndRoles() {
+    let users = await fetch(listUsersURL);
+    listUsers = await users.json();
+    let roles = await fetch(listRolesURL);
+    listRoles = await roles.json();
+    createAdminPanel();
+}
+
+getUsersAndRoles();
 
 function editUserForm(id) {
-    const editId = document.getElementById("edit_id")
-    const editIdHidden = document.getElementById("edit_id_hidden")
-    const editName = document.getElementById("edit_name");
-    const editLastname = document.getElementById("edit_lastname");
-    const editAge = document.getElementById("edit_age");
-    const editUsername = document.getElementById("edit_email");
-    const editPassword = document.getElementById("edit_password");
-    const editRoles = document.getElementById("edit_roles");
-
     let user = listUsers.find(user => user.id === id);
 
     editId.value = user.id;
-    editIdHidden.value = user.id;
     editName.value = user.name;
     editLastname.value = user.lastname;
     editAge.value = user.age;
     editUsername.value = user.username;
-    editPassword.value = user.password;
     editRoles.options.length = 0;
+
     listRoles.forEach(role => {
         let option = new Option();
-        option.text = role.name;
+        option.text = role.name.replace("ROLE_", "");
         option.value = role.id;
+        if (user.roles.includes(role.id)) {
+            option.selected = true;
+        }
         editRoles.add(option);
     });
 }
 
+function getRolesFromEditUserForm() {
+    let roles = Array.from(editRoles.selectedOptions)
+        .map(option => option.value);
+
+    let rolesToEdit = [];
+
+    if (roles.includes("1")) {
+        let role1 = {
+            id: 1,
+            name: "Admin"
+        }
+        rolesToEdit.push(role1);
+    }
+    if (roles.includes("2")) {
+        let role2 = {
+            id: 2,
+            name: "User"
+        }
+        rolesToEdit.push(role2);
+    }
+
+    return rolesToEdit;
+}
+
 function getEditUserAction() {
-    editUser.addEventListener("submit", async (e) => {
+    const modalEditSubmitBtn = document.getElementById("submit_btn-modal-edit");
+    const modalEditExitBtn = document.getElementById("exit_btn-modal-edit");
+    const modalEdit = document.getElementById("modal_edit");
+
+    modalEditSubmitBtn.addEventListener("click", e => {
         e.preventDefault();
-        let formData = new FormData(e.target);
-        let update = await fetch(editUserURL, {
+        let user = {
+            id: editId.value,
+            name: editName.value,
+            lastname: editLastname.value,
+            age: editAge.value,
+            username: editUsername.value,
+            password: editPassword.value,
+            roles: getRolesFromEditUserForm()
+        }
+        fetch(editUserURL, {
             method: 'PATCH',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json;charset=UTF-8'
             },
-            body:
-                $("#edit_form").serialize()
-        });
-        listUsers[formData.get("id") - 1] = await update.json();
-        createAdminPanel();
-        // $(modalEdit).modal('hide');
-    });
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
+            .then(updatedUser => {
+                let index = listUsers.findIndex(user => user.id === updatedUser.id);
+                listUsers[index] = updatedUser;
+
+                createAdminPanel();
+
+                modalEditExitBtn.click();
+                $("body").fadeTo(500, 0.5, function () {
+                    location.reload();
+                });
+            })
+            .then(() => {
+                $(modalEdit).modal('hide');
+            });
+    })
 }
 
 getEditUserAction();
@@ -180,16 +232,17 @@ function deleteUserForm(id) {
     deleteRoles.options.length = 0;
     listRoles.forEach(role => {
         let option = new Option();
-        option.text = role.name;
+        option.text = role.name.replace("ROLE_", "");
         option.value = role.id;
         deleteRoles.add(option);
     });
 }
 
-getDeleteUserAction();
-
 function getDeleteUserAction() {
-    deleteUser.addEventListener("submit", async (e) => {
+    const deleteForm = document.getElementById("delete_form");
+    const modalDelete = document.getElementById("modal_delete");
+
+    deleteForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         let formData = new FormData(e.target);
         await fetch(deleteUserURL, {
@@ -205,7 +258,7 @@ function getDeleteUserAction() {
     });
 }
 
-
+getDeleteUserAction();
 
 
 

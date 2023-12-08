@@ -3,15 +3,12 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -41,19 +38,13 @@ public class AdminController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("api/admin")
-    public Authentication getAuthentication() {
-        return SecurityContextHolder.getContext().getAuthentication();
-    }
-
     @PostMapping("/admin/add")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.save(user));
     }
 
     @PatchMapping("/admin/edit")
-    public ResponseEntity<User> edit(@RequestBody User user, @RequestParam("roles") Collection<Long> id) {
-        user.setRoles(roleService.findById(id));
+    public ResponseEntity<User> editUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.edit(user));
     }
 
