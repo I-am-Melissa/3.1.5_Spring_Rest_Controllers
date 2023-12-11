@@ -73,6 +73,16 @@ const createAdminPanel = () => {
         })
 }
 
+async function getUsersAndRoles() {
+    let users = await fetch(listUsersURL);
+    listUsers = await users.json();
+    let roles = await fetch(listRolesURL);
+    listRoles = await roles.json();
+    createAdminPanel();
+}
+
+getUsersAndRoles();
+
 addUser.addEventListener("submit", async (e) => {
     const addName = document.getElementById("name");
     const addLastname = document.getElementById("lastname");
@@ -107,21 +117,14 @@ addUser.addEventListener("submit", async (e) => {
             roles: addListRoles
         })
     })
-        .then(() => {
+        .then(res => res.json())
+        .then(user => {
+            listUsers[listUsers.length] = user;
+            createAdminPanel();
+            addUser.reset();
             navigation.click();
-            location.reload();
         });
 })
-
-async function getUsersAndRoles() {
-    let users = await fetch(listUsersURL);
-    listUsers = await users.json();
-    let roles = await fetch(listRolesURL);
-    listRoles = await roles.json();
-    createAdminPanel();
-}
-
-getUsersAndRoles();
 
 function editUserForm(id) {
     let user = listUsers.find(user => user.id === id);
